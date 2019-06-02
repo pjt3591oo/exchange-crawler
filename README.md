@@ -27,3 +27,16 @@ https://crix-api-endpoint.upbit.com/v1/crix/candles/봉기준/거리(기간)?cod
 ```bash
 $ python app.py
 ```
+
+* config
+
+`./crawler/upbit.py`에서 아래 코드를 수정하면 수집 데이터 종류, 주기를 변경할 수 있다.
+
+```
+UNIT = "minutes"
+PED = 1
+MARKET = "KRW"
+COINTICKER = "EOS"
+COUNT = 400
+ENDTIME = ""
+```
