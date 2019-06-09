@@ -8,18 +8,18 @@ import os
 
 COINTICKER = "BTC"
 
-fileName = "coinone_123"+COINTICKER+".csv"
+fileName = "coinone_"+COINTICKER+".csv"
 isExist = os.path.exists('{fileName}'.format(fileName=fileName))
-f = open(fileName, 'a')
+F = open(fileName, 'a')
 
 if not isExist:
     f.write('DT,Open,Low,High,Close,Volume,Adj_Close\n',)
 
 def save(dataset):
-  global f
+  
   form = '{DT},{Open},{Low},{High},{Close},{Volume},{Adj_Close}\n'
   for data in dataset:
-    f.write(
+    F.write(
       form.format(
         DT=data['DT'],
         Open=data['Open'],
@@ -54,6 +54,6 @@ def start():
     print('================***=================')
     # sleep(1)
 
-  f.close()
+  F.close()
 
   
