@@ -1,4 +1,6 @@
-from crawler import upbit
+from crawler import upbit, bithumb,coinone
 
 if __name__ == "__main__":
-  upbit.start()
+  # upbit.start()
+  # bithumb.start()
+  coinone.start()

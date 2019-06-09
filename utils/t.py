@@ -1,5 +1,4 @@
 import datetime
-
 '''
  해당 패키지는 datetime 형으로 반환
 '''
@@ -16,3 +15,7 @@ def converted(s) :
 
 def dayMinuteCalc(date, delta) :
   return date + datetime.timedelta(minutes=delta)
+
+def beautify(ts) :
+  ts=ts/1000
+  return datetime.datetime.utcfromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')

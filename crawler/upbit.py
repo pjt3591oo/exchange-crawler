@@ -37,7 +37,7 @@ def start() :
 
   
 def save(data) :
-  fileName = "upbit"+COINTICKER+".csv"
+  fileName = "upbit_"+COINTICKER+".csv"
   isExist = os.path.exists('{fileName}'.format(fileName=fileName))
   
   f = open(fileName, 'a')
