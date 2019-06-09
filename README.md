@@ -43,7 +43,7 @@ ENDTIME = ""
 
 # 코인원 채결내용 가져오기
 
-* sampl;e
+* sample
 
 ```
 https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone&type=1m&last_time=1559949180000
