@@ -8,10 +8,10 @@ import os
 
 COINTICKER = "BTC"
 
-fileName = "coinone_"+COINTICKER+".csv"
+fileName = "coinone_123"+COINTICKER+".csv"
 isExist = os.path.exists('{fileName}'.format(fileName=fileName))
 f = open(fileName, 'a')
-print(isExist)
+
 if not isExist:
     f.write('DT,Open,Low,High,Close,Volume,Adj_Close\n',)
 
@@ -34,11 +34,13 @@ def save(dataset):
 
 def start():
   TO = ''
+  UNIT = "m"
+  PED = 1
   COINTICKER = '' # ''는 btc, 코인원은 cointicker를 소문자로 처리함
-  BASE_URL = "https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{cointicker}&type=1m&last_time={to}"
+  BASE_URL = "https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{cointicker}&type={ped}{unit}&last_time={to}"
   
   while True:
-    url = BASE_URL.format(to=TO, cointicker=COINTICKER)
+    url = BASE_URL.format(to=TO, cointicker=COINTICKER, ped=PED, unit=UNIT)
     res = rq.get(url)
     dataset = reversed(list(res.json()['data']))
 
