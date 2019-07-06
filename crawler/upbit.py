@@ -9,7 +9,7 @@ import os
 UNIT = "minutes"
 PED = 1
 MARKET = "KRW"
-COINTICKER = "EOS"
+COINTICKER = "BTC"
 COUNT = 400
 ENDTIME = ""
 
@@ -37,19 +37,24 @@ def start() :
 
   
 def save(data) :
-  fileName = "upbit_"+COINTICKER+".csv"
+  
+  fileName = "./data/upbit_"+COINTICKER+"_6M11D.csv"
   isExist = os.path.exists('{fileName}'.format(fileName=fileName))
   
   f = open(fileName, 'a')
+
   if not isExist:
-    f.write('code,candleDateTime,candleDateTimeKst,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice,timestamp,unit\n',)
+    f.write('TimeStamp,candleDateTime,candleDateTimeKst,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice,unit\n',)
+    f.close()
   
-  form = '{code},{candleDateTime},{candleDateTimeKst},{openingPrice},{highPrice},{lowPrice},{tradePrice},{candleAccTradeVolume},{candleAccTradePrice},{timestamp},{unit}\n'
+  f = open(fileName, 'a')
+
+  form = '{TimeStamp},{candleDateTime},{candleDateTimeKst},{openingPrice},{highPrice},{lowPrice},{tradePrice},{candleAccTradeVolume},{candleAccTradePrice},{unit}\n'
 
   for item in data: 
-
+ 
     f.write(form.format(
-      code=item['code'],
+      TimeStamp=int(item['timestamp']),
       candleDateTime=item['candleDateTime'],
       candleDateTimeKst=item['candleDateTimeKst'],
       openingPrice=item['openingPrice'],
@@ -58,13 +63,13 @@ def save(data) :
       tradePrice=item['tradePrice'],
       candleAccTradeVolume=item['candleAccTradeVolume'],
       candleAccTradePrice=item['candleAccTradePrice'],
-      timestamp=item['timestamp'],
       unit=item['unit'],
     ))
     
   f.close()
   
+  
   print('start Date : ', data[0]["candleDateTime"])
   print('end Date   : ', data[-1]["candleDateTime"])
 
-  sleep(randint(1,5))
+  # sleep(randint(1,5))
