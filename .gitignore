@@ -4,3 +4,4 @@ utils/__pycache__
 .DS_Store
 
 data/*.csv
+data/*.log

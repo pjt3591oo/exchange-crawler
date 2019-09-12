@@ -1,75 +1,127 @@
 import requests as rq
+import json, time
 import datetime
-from utils.t import getToday, dayMinuteCalc, converted
-from random import randint
-from time import sleep
-import json
+from random import *
+
 import os
 
-UNIT = "minutes"
-PED = 1
+UNIT = "minutes" # days, minutes
+PED = 5
 MARKET = "KRW"
 COINTICKER = "BTC"
-COUNT = 400
+COUNT = 400      # max: 400
 ENDTIME = ""
 
-BASEURL = "https://crix-api-endpoint.upbit.com/v1/crix/candles/{uint}/{ped}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}"
+STEP=0  # 1s => 1000ms
 
-def url(uint, ped, market, cointicker, count, endtime) :
-  return BASEURL.format(uint=uint, ped=ped, market=market, cointicker=cointicker, count=count, endtime=endtime)
+STEP_BY_PED_OF_UNIT = {
+  "days": {
+    "1": 86400000
+  }, 
+  "minutes": {
+    "1": 60000,
+    "5": 300000,
+    "10": 600000
+  }
+}
 
-def start() :
-  u = url(UNIT, PED, MARKET, COINTICKER, COUNT, '')
-  res = rq.get(u)
-  save(res.json())
-  endtime = res.json()[-1]["candleDateTime"]
+BASEURL = {
+  "days": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}",   # days
+  "minutes": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}/{ped}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}"   # days
+}
 
-  while len(res.json()):
-    endtime = converted(endtime)
-    endtime = str(endtime).replace(' ', '%20')
-    u = url(UNIT, PED, MARKET, COINTICKER, COUNT, endtime)
+def getData(et):
+  url = BASEURL[UNIT].format(uint=UNIT, ped=PED, market=MARKET, cointicker=COINTICKER, count=COUNT, endtime=ENDTIME)
+  # print(url)
+  res = rq.get(url)
 
-    res = rq.get(u)
+  result = res.json()
+  result_cnt = len(result)
+  data= [{
+      "code": item['code'],
+      "openingPrice": item['openingPrice'],
+      "highPrice": item['highPrice'],
+      "lowPrice": item['lowPrice'],
+      "tradePrice": item['tradePrice'],
+      "candleAccTradeVolume": item['candleAccTradeVolume'],
+      "candleAccTradePrice": item['candleAccTradePrice'],
+      "candleDateTime": item["candleDateTime"],
+      "timestamp": item["timestamp"] and item["timestamp"] or 0
+    } for item in result if isinstance(item['timestamp'], int)]
 
-    endtime = res.json()[-1]["candleDateTime"]
+  first = data[0]
+  end = data[-1]
+
+  '''
+  code,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice
+  '''
+
+  return {
+    "first": first['timestamp'],
+    "firstCandleDateTime": first["candleDateTime"],
+    "end": end['timestamp'],
+    "endCandleDateTime": end["candleDateTime"],
+    "count": result_cnt,
+    "data": data,
+    "really_data_cnt": len(data)
+  }
+
+def start():
+  STEP = STEP_BY_PED_OF_UNIT[UNIT][str(PED)]
+  
+  is_continue = True
+  page = 1
+  ENDTIME = ''
+
+  while is_continue:
+    result = getData(ENDTIME)
+    print('latest : %s'%(result['firstCandleDateTime']))
+    print('last   : %s'%(result['endCandleDateTime']))
+    print('total count  : %s'%(result['count']))
+    print('really  cnt  : %s'%(result['really_data_cnt']))
     
-    save(res.json())
+    for item in result['data']:
+      filename = './data/%s_%s_%s_%s_%s.csv'%('upbit', MARKET, COINTICKER, UNIT, PED )
+      file_save(filename, item)
 
-  
-def save(data) :
-  
-  fileName = "./data/upbit_"+COINTICKER+"_6M11D.csv"
-  isExist = os.path.exists('{fileName}'.format(fileName=fileName))
-  
-  f = open(fileName, 'a')
+    print('=========> %d page complete <========='%(page))
+    is_continue = result['count'] < COUNT and False or True
+    timestamp = result['end'] # - STEP
+    
+    timestamp = int(timestamp / STEP) * STEP # endtime이 분/시/일과 딱 떨어지지 않으면 요청에러 발생
+    utc_timezone = datetime.timezone(datetime.timedelta(hours=0))
 
-  if not isExist:
-    f.write('TimeStamp,candleDateTime,candleDateTimeKst,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice,unit\n',)
+    ENDTIME = datetime.datetime.fromtimestamp(timestamp/1000, utc_timezone) # 2018-09-11 00:00:00+00:00
+    ENDTIME = ENDTIME.isoformat()                                           # 2018-09-11T00:00:00+00:00
+    ENDTIME = ENDTIME.replace('+00:00', '.000Z')                            # 2018-09-11T00:00:00.000Z
+    
+    page += 1
+
+    time.sleep(uniform(0, 2))
+
+def file_save(filename, data):
+  '''
+  code,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice
+  '''
+  
+  if not os.path.isfile(filename) :  
+    f = open(filename, 'a')
+    f.write('code,time,timestamp,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice\n')
     f.close()
-  
-  f = open(fileName, 'a')
 
-  form = '{TimeStamp},{candleDateTime},{candleDateTimeKst},{openingPrice},{highPrice},{lowPrice},{tradePrice},{candleAccTradeVolume},{candleAccTradePrice},{unit}\n'
+  f = open(filename, 'a')
+  f.write(
+    "%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(
+      data["code"],
+      data['candleDateTime'],
+      data['timestamp'],
+      data["openingPrice"],
+      data["highPrice"],
+      data["lowPrice"],
+      data["tradePrice"],
+      data["candleAccTradeVolume"],
+      data["candleAccTradePrice"]
+    )
+  )
 
-  for item in data: 
- 
-    f.write(form.format(
-      TimeStamp=int(item['timestamp']),
-      candleDateTime=item['candleDateTime'],
-      candleDateTimeKst=item['candleDateTimeKst'],
-      openingPrice=item['openingPrice'],
-      highPrice=item['highPrice'],
-      lowPrice=item['lowPrice'],
-      tradePrice=item['tradePrice'],
-      candleAccTradeVolume=item['candleAccTradeVolume'],
-      candleAccTradePrice=item['candleAccTradePrice'],
-      unit=item['unit'],
-    ))
-    
   f.close()
-  
-  
-  print('start Date : ', data[0]["candleDateTime"])
-  print('end Date   : ', data[-1]["candleDateTime"])
-
-  # sleep(randint(1,5))
