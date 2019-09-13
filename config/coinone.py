@@ -1,5 +1,5 @@
-MARKETS = ['KRW']
-TICKERS = ['BTC', 'ETH', 'EOS']
+MARKETS = ['krw']
+TICKERS = ['btc', 'eth', 'eos']
 UNITS = { # d: day, m: minutes
   'd': 'd',
   'm': 'm'

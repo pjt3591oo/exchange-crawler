@@ -1,10 +1,9 @@
 from crawler import upbit, bithumb, coinone
 import argparse
 from config import upbit as config_upbit, bithumb as config_bithumb, coinone as config_coinone
-import config
+
 parser = argparse.ArgumentParser(description='Exchange Crawler CLI Program.', prog="ECC")
 parser.add_argument('--version', action='version', version='%(prog)s Version 1.0 ')
-
 
 def p_s():
   '''
@@ -13,9 +12,9 @@ def p_s():
     bithumb
   '''
 
-  parser.add_argument('--exchange', type=str, help="exchange           (default: upbit)")
-  parser.add_argument('--market', type=str,   help="market             (default: KRW)")
-  parser.add_argument('--ticker', type=str,   help="cointicker         (default: BTC)")
+  parser.add_argument('--exchange', type=str, help="upbit, coinone     (default: upbit)")
+  parser.add_argument('--market', type=str,   help="market             (default: krw)")
+  parser.add_argument('--ticker', type=str,   help="cointicker         (default: btc)")
 
   parser.add_argument('--unit', type=str,     help="d(day), m(minutes) (default: m)")
   parser.add_argument('--ped', type=int,      help="간격                (default: 5)")
@@ -25,36 +24,33 @@ def p_s():
 
 
 def parse(a):
-  # exchanges = ['UPBIT', 'BITHUMB', 'COINONE']
-  exchange = a.exchange and a.exchange.upper() or 'upbit'
-  # if not exchange in exchanges:
-  #   exchange = 'upbit'
+  exchanges = ['upbit', 'coinone']
+  exchange = a.exchange and a.exchange or 'upbit'
   
-  # markets = ['KRW', 'BTC']
-  # tickers = ['BTC', 'ETH', 'EOS']
-  # units = ['days', 'minutes'] # days: day, minutes: minutes
-  # peds = {
-  #   'days': [1],
-  #   'minutes': [1, 5, 10]
-  # }
+  exchange_config ={}
 
-  market = a.market and a.market.upper() or 'KRW'
-  ticker = a.ticker and a.ticker.upper() or 'BTC'
-  unit = a.unit and a.unit or 'minutes'
-  ped = a.ped and a.ped or 5
-
-  # if not market in markets:
-  #   market = 'KRW'
+  if not exchange in exchanges or exchange == 'upbit':
+    exchange = 'upbit'
+    exchange_config = config_upbit
+  else:
+    exchange = 'coinone'
+    exchange_config = config_coinone  
   
-  # if not ticker in tickers:
-  #   ticker = 'BTC'
+  MARKETS = exchange_config.MARKETS
+  TICKERS = exchange_config.TICKERS
+  UNITS = exchange_config.UNITS 
+  PEDS = exchange_config.PEDS
 
-  # if not unit in units:
-  #   unit = 'minutes'
+  market = a.market in MARKETS and a.market or 'krw'
+  ticker = a.ticker in TICKERS and a.ticker or 'btc'
+  unit = a.unit in UNITS.get(a.unit, []) and a.unit or UNITS['m']
+  ped = 5
 
-  # if not ped in peds[unit]:
-  #   if unit == 'days'   : ped = 1
-  #   if unit == 'minutes': ped = 5
+  if a.ped in PEDS.get(a.ped, []):
+    if unit == 'm':
+      ped = 5
+    else:
+      ped = 1
 
   return {
     "exchange": exchange,
@@ -75,19 +71,15 @@ if __name__ == "__main__":
   ticker = args['ticker']
   unit = args['unit']
   ped = args['ped']
-
-  print(exchange)
-  print(market)
-  print(ticker)
-  print(unit)
-  print(ped)
   
+  usages_exchanges = ['upbit', 'coinone']
+
   try :
-    if exchange == 'UPBIT':
+    if exchange == 'upbit':
       upbit.start(market, ticker, unit, ped)
-    elif exchange == 'BITHUMB':
-      print('wait')
-    elif exchange =='COINONE':
+    # elif exchange == 'BITHUMB':
+    #   bithumb.start(market, ticker, unit, ped)
+    elif exchange =='coinone':
       coinone.start(market, ticker, unit, ped)
   except KeyboardInterrupt:
     print('종료')

@@ -19,7 +19,7 @@ BASE_URL = "https://www.bithumb.com/resources/chart/BTC_xcoinTrade_{ped}{unit}.j
 ONE_DAY_SEC = 86400000
 ONE_MUNITE = 60000
 
-def start():
+def start(market, ticker, unit, ped):
   UNIT = "M"
   PED = "10"
   MARKET = "KRW"

@@ -1,11 +1,45 @@
 # exchange crawler
 
-업비트, 코인원, 빗썸 크롤러 [문서 바로가기](./docs/crawler.md)
+업비트, 코인원 크롤러 [문서 바로가기](./docs/crawler.md)
 
 ## 의존성 모듈 설치
 
 ```bash
 $ pip install requirements.txt
+```
+
+## 설정파일
+
+**`./config/*.py`**
+
+* upbit
+
+```python
+MARKETS = ['krw', 'btc']
+TICKERS = ['btc', 'eth', 'eos']
+UNITS = { # d: day, m: minutes
+  'd': 'days',
+  'm': 'minutes'
+} 
+PEDS = {
+  'd': [1],
+  'm': [1, 5, 10]
+}
+```
+
+* coinone
+
+```python
+MARKETS = ['krw']
+TICKERS = ['btc', 'eth', 'eos']
+UNITS = { # d: day, m: minutes
+  'd': 'd',
+  'm': 'm'
+} 
+PEDS = {
+  'd': [1],
+  'm': [1, 5, 10]
+}
 ```
 
 ## 실행

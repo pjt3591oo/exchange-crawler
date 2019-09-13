@@ -130,8 +130,8 @@ def start(market, cointicker, unit, ped):
   global UNIT
   global PED
 
-  MARKET = market
-  COINTICKER = cointicker
+  MARKET = market.upper()
+  COINTICKER = cointicker.upper()
   UNIT = unit
   PED = ped
   ENDTIME = ''
