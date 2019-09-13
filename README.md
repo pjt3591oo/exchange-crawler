@@ -1,78 +1,51 @@
-# 업비트 채결내용 가져오기
+# exchange crawler
 
-* sample
+업비트, 코인원, 빗썸 크롤러 [문서 바로가기](./docs/crawler.md)
 
-```
-https://crix-api-endpoint.upbit.com/v1/crix/candles/minutes/1?code=CRIX.UPBIT.KRW-BTC&count=2&to=2017-12-27%2005:10:00
-```
-
-```
-https://crix-api-endpoint.upbit.com/v1/crix/candles/{봉기준}/{거리(기간})?code=CRIX.UPBIT.{마켓-코인티커}&count={갯수}&to={최종 데이터 시간}
-```
-
-봉기준: minutes, days, weeks, months
-
-거리(기간): 1, 3, 5, 10, 15, 30, 60, 240(분)
-
-마켓: KRW, BTC, ETH, USDT
-
-코인티커: 코인종류(대문자)
-
-갯수: 최종 데이터 시간을 기준으로 몇개를 요청할 지
-
-최종 데이터 시간: 0번째 인덱스의 시간(최신 데이터). 만약, 해당 값이 비면 가장 최신 데이터 시간을 기준으로 count만큼 가져온다.
-
-* start
+## 의존성 모듈 설치
 
 ```bash
-$ python app.py
+$ pip install requirements.txt
 ```
 
-* config
+## 실행
 
-`./crawler/upbit.py`에서 아래 코드를 수정하면 수집 데이터 종류, 주기를 변경할 수 있다.
+```bash
+$ python3 app.py --help
 
-```
-UNIT = "minutes"
-PED = 1
-MARKET = "KRW"
-COINTICKER = "EOS"
-COUNT = 400
-ENDTIME = ""
-```
+usage: ECC [-h] [--version] [--exchange EXCHANGE] [--market MARKET]
+           [--ticker TICKER] [--unit UNIT] [--ped PED]
 
-# 코인원 채결내용 가져오기
+Exchange Crawler CLI Program.
 
-* sample
-
-```
-https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone&type=1m&last_time=1559949180000
-```
-
-
-```
-https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinoneeth&type=1m&last_time=1559949180000
+optional arguments:
+  -h, --help           show this help message and exit
+  --version            show program's version number and exit
+  --exchange EXCHANGE  exchange (default: upbit)
+  --market MARKET      market (default: KRW)
+  --ticker TICKER      cointicker (default: BTC)
+  --unit UNIT          days, minutes (default: minutes)
+  --ped PED            간격 (default: 5)
 ```
 
+- sample 1
+
+```bash
+$ python3 app.py --exchange upbit --market KRW --ticker ETH --unit minutes --ped 5
+```
+
+* 거래소: upbit
+* 마켓: KRW(한화)
+* 거래코인: ETH(이더리움)
+* 거래간격: 5분
+
+- sample 2
 
 ```
-https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{코인티커}&type={거리(기간)}&last_time={최종 데이터 시간}
+$ python3 app.py --exchange upbit --market BTC --ticker ETH --unit days --ped 1
 ```
 
-코인티커: 코인종류(소문자). btc의 경우 해당값을 비운다.
-
-거리(기간): 1m => 1분 단위
-
-최종 데이터 시간: 0번째 인덱스의 시간(최신 데이터). 만약, 해당 값이 비면 가장 최신 데이터 시간을 기준으로 가져온다. (기본값 200개)
-
-* config
-
-`./crawler/coinone.py`에서 아래 코드를 수정하면 수집 데이터 종류, 주기를 변경할 수 있다.
-
-```
-UNIT = "m"
-PED = 1
-MARKET = "KRW"
-COINTICKER = "EOS"
-TO = ""
-```
+* 거래소: upbit
+* 마켓: BTC(비트코인)
+* 거래코인: ETH(이오스)
+* 거래간격: 1일

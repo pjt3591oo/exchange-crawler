@@ -5,6 +5,32 @@ from random import *
 
 import os
 
+UNIT = "minutes" # days, minutes
+PED = 5
+MARKET = "KRW"
+COINTICKER = "BTC"
+COUNT = 400      # max: 400
+ENDTIME = ""
+# ENDTIME = "2019-01-01T13:00:00.000Z"
+
+STEP = 0  # 1s => 1000ms
+
+STEP_BY_PED_OF_UNIT = {
+  "days": {
+    "1": 86400000
+  }, 
+  "minutes": {
+    "1": 60000,
+    "5": 300000,
+    "10": 600000
+  }
+}
+
+BASEURL = {
+  "days": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}",   # days
+  "minutes": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}/{ped}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}"   # days
+}
+
 def file_save(filename, data):
   '''
   code,openingPrice,highPrice,lowPrice,tradePrice,candleAccTradeVolume,candleAccTradePrice
@@ -31,33 +57,6 @@ def file_save(filename, data):
   )
 
   f.close()
-  
-
-UNIT = "minutes" # days, minutes
-PED = 5
-MARKET = "KRW"
-COINTICKER = "BTC"
-COUNT = 400      # max: 400
-ENDTIME = ""
-# ENDTIME = "2019-01-01T13:00:00.000Z"
-
-STEP=0  # 1s => 1000ms
-
-STEP_BY_PED_OF_UNIT = {
-  "days": {
-    "1": 86400000
-  }, 
-  "minutes": {
-    "1": 60000,
-    "5": 300000,
-    "10": 600000
-  }
-}
-
-BASEURL = {
-  "days": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}",   # days
-  "minutes": "https://crix-api-cdn.upbit.com/v1/crix/candles/{uint}/{ped}?code=CRIX.UPBIT.{market}-{cointicker}&count={count}&to={endtime}"   # days
-}
 
 def date_str_to_timestamp(d):
   '''
@@ -88,7 +87,7 @@ def date_str_to_timestamp(d):
 def getData(endtime):
 
   url = BASEURL[UNIT].format(uint=UNIT, ped=PED, market=MARKET, cointicker=COINTICKER, count=COUNT, endtime=endtime)
-  # print(url)
+  print(url)
   res = rq.get(url)
 
   result = res.json()
@@ -125,12 +124,22 @@ def getData(endtime):
     "really_data_cnt": len(data)
   }
 
-def start():
+def start(market, cointicker, unit, ped):
+  global MARKET
+  global COINTICKER
+  global UNIT
+  global PED
+
+  MARKET = market
+  COINTICKER = cointicker
+  UNIT = unit
+  PED = ped
+  ENDTIME = ''
+
   STEP = STEP_BY_PED_OF_UNIT[UNIT][str(PED)]
-  
+
   is_continue = True
   page = 1
-  ENDTIME = ''
   while is_continue:
 
     # print(ENDTIME)
