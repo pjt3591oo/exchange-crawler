@@ -40,7 +40,9 @@ def parse(a):
   TICKERS = exchange_config.TICKERS
   UNITS = exchange_config.UNITS 
   PEDS = exchange_config.PEDS
-  print(a)
+
+  a.market = type(a.market) == type(None) and 'KRW' or a.market
+  a.ticker = type(a.ticker) == type(None) and 'BTC' or a.ticker
 
   market = a.market.lower().strip() in MARKETS and a.market or 'krw'
   ticker = a.ticker.lower().strip() in TICKERS and a.ticker or 'btc'
