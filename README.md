@@ -55,10 +55,10 @@ Exchange Crawler CLI Program.
 optional arguments:
   -h, --help           show this help message and exit
   --version            show program's version number and exit
-  --exchange EXCHANGE  exchange (default: upbit)
-  --market MARKET      market (default: KRW)
-  --ticker TICKER      cointicker (default: BTC)
-  --unit UNIT          days, minutes (default: minutes)
+  --exchange EXCHANGE  upbit, coinone (default: upbit)
+  --market MARKET      market (default: krw)
+  --ticker TICKER      cointicker (default: btc)
+  --unit UNIT          d(day), m(minutes) (default: m)
   --ped PED            간격 (default: 5)
 ```
 
@@ -69,7 +69,7 @@ optional arguments:
 - sample 1
 
 ```bash
-$ python3 app.py --exchange upbit --market KRW --ticker ETH --unit minutes --ped 5
+$ python3 app.py --exchange upbit --market KRW --ticker ETH --unit m --ped 5
 ```
 
 * 거래소: upbit
@@ -80,7 +80,7 @@ $ python3 app.py --exchange upbit --market KRW --ticker ETH --unit minutes --ped
 - sample 2
 
 ```
-$ python3 app.py --exchange upbit --market BTC --ticker ETH --unit days --ped 1
+$ python3 app.py --exchange upbit --market BTC --ticker ETH --unit d --ped 1
 ```
 
 * 거래소: upbit

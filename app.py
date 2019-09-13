@@ -40,22 +40,23 @@ def parse(a):
   TICKERS = exchange_config.TICKERS
   UNITS = exchange_config.UNITS 
   PEDS = exchange_config.PEDS
+  print(a)
 
-  market = a.market in MARKETS and a.market or 'krw'
-  ticker = a.ticker in TICKERS and a.ticker or 'btc'
-  unit = a.unit in UNITS.get(a.unit, []) and a.unit or UNITS['m']
-  ped = 5
+  market = a.market.lower().strip() in MARKETS and a.market or 'krw'
+  ticker = a.ticker.lower().strip() in TICKERS and a.ticker or 'btc'
+  unit = a.unit in UNITS.get(a.unit, []) and UNITS[a.unit] or UNITS['m']
+  ped = 1
 
-  if a.ped in PEDS.get(a.ped, []):
-    if unit == 'm':
+  if not a.ped in PEDS.get(a.unit, []):
+    if a.unit == 'm':
       ped = 5
     else:
       ped = 1
 
   return {
-    "exchange": exchange,
-    "market": market,
-    "ticker": ticker,
+    "exchange": exchange.lower().strip(),
+    "market": market.lower().strip(),
+    "ticker": ticker.lower().strip(),
     "unit": unit,
     "ped": ped
   }

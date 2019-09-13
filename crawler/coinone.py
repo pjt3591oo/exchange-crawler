@@ -6,7 +6,6 @@ from time import sleep
 import json
 import os
 
-TICKER = "BTC"
 UNIT = "minutes" # days, minutes
 PED = 5
 MARKET = "KRW"
@@ -59,13 +58,14 @@ def start(market, ticker, unit, ped):
   TO = ''
   UNIT = unit.lower()
   PED = ped
-  TICKER = ticker.lower() # ''는 btc, 코인원은 cointicker를 소문자로 처리함
+  TICKER = not ticker.lower() == 'btc'.strip() and  ticker.lower() or '' # ''는 btc, 코인원은 cointicker를 소문자로 처리함
+  print(TICKER, TICKER == '')
   BASE_URL = "https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{ticker}&type={ped}{unit}&last_time={to}"
   
-  filecheck(MARKET, TICKER, UNIT, PED)
-  
+  filecheck(MARKET, ticker, UNIT, ped)
   while True:
     url = BASE_URL.format(to=TO, ticker=TICKER, ped=PED, unit=UNIT)
+    print(url)
     res = rq.get(url)
     dataset = reversed(list(res.json()['data']))
 

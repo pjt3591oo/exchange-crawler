@@ -135,7 +135,8 @@ def start(market, cointicker, unit, ped):
   UNIT = unit
   PED = ped
   ENDTIME = ''
-
+  print(UNIT)
+  print(PED)
   STEP = STEP_BY_PED_OF_UNIT[UNIT][str(PED)]
 
   is_continue = True
