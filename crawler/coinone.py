@@ -6,20 +6,30 @@ from time import sleep
 import json
 import os
 
-COINTICKER = "BTC"
+TICKER = "BTC"
+UNIT = "minutes" # days, minutes
+PED = 5
+MARKET = "KRW"
+TICKER = "BTC"
+COUNT = 400      # max: 400
 
-fileName = "coinone_"+COINTICKER+".csv"
-isExist = os.path.exists('{fileName}'.format(fileName=fileName))
-F = open(fileName, 'a')
+STEP_BY_PED_OF_UNIT = {
+  "d": {
+    "1": 86400000
+  }, 
+  "m": {
+    "1": 60000,
+    "5": 300000,
+    "10": 600000
+  }
+}
 
-if not isExist:
-    f.write('DT,Open,Low,High,Close,Volume,Adj_Close\n',)
+def save(filename, dataset):
+  f = open(filename, 'a')
 
-def save(dataset):
-  
   form = '{DT},{Open},{Low},{High},{Close},{Volume},{Adj_Close}\n'
   for data in dataset:
-    F.write(
+    f.write(
       form.format(
         DT=data['DT'],
         Open=data['Open'],
@@ -30,30 +40,46 @@ def save(dataset):
         Adj_Close=data['Adj_Close']
       )
     )
+  
+  f.close()
 
 
-def start():
+def filecheck(MARKET, TICKER, UNIT, PED):
+  filename = './data/%s_%s_%s_%s_%s.csv'%('coinone', MARKET, TICKER, UNIT, PED )
+  isExist = os.path.exists('{filename}'.format(filename=filename))
+  f = open(filename, 'a')
+  
+  if not isExist:
+    f.write('DT,Open,Low,High,Close,Volume,Adj_Close\n',)
+
+  f.close() 
+
+
+def start(market, ticker, unit, ped):
   TO = ''
-  UNIT = "m"
-  PED = 1
-  COINTICKER = '' # ''는 btc, 코인원은 cointicker를 소문자로 처리함
-  BASE_URL = "https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{cointicker}&type={ped}{unit}&last_time={to}"
+  UNIT = unit.lower()
+  PED = ped
+  TICKER = ticker.lower() # ''는 btc, 코인원은 cointicker를 소문자로 처리함
+  BASE_URL = "https://tb.coinone.co.kr/api/v1/chart/olhc/?site=coinone{ticker}&type={ped}{unit}&last_time={to}"
+  
+  filecheck(MARKET, TICKER, UNIT, PED)
   
   while True:
-    url = BASE_URL.format(to=TO, cointicker=COINTICKER, ped=PED, unit=UNIT)
+    url = BASE_URL.format(to=TO, ticker=TICKER, ped=PED, unit=UNIT)
     res = rq.get(url)
     dataset = reversed(list(res.json()['data']))
 
-    save(dataset)
+    filename = './data/%s_%s_%s_%s_%s.csv'%('coinone', MARKET, TICKER, UNIT, PED )
+    save(filename, dataset)
 
     print(url)
     print(beautify(res.json()['data'][-1]['DT']))
     print(beautify(res.json()['data'][0]['DT']))
     print(len(res.json()['data']))
-    TO = int(res.json()['data'][0]['DT']) - 60000
+    TO = int(res.json()['data'][0]['DT']) - STEP_BY_PED_OF_UNIT[UNIT][str(PED)]
     print('================***=================')
-    # sleep(1)
+    sleep(1)
 
-  F.close()
+  
 
   

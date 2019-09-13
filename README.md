@@ -28,6 +28,10 @@ optional arguments:
   --ped PED            간격 (default: 5)
 ```
 
+> 결과 데이터는 **`./data/거래소_마켓_거래코인_거래간격.csv`** 형태로 저장
+
+### upbit
+
 - sample 1
 
 ```bash
@@ -50,4 +54,37 @@ $ python3 app.py --exchange upbit --market BTC --ticker ETH --unit days --ped 1
 * 거래코인: ETH(이오스)
 * 거래간격: 1일
 
-> 결과 데이터는 **`거래소_마켓_거래코인_거래간격.csv`** 형태로 저장
+### coinone
+
+- sample 1
+
+```
+$ python3 app.py --exchange coinone --market KRW --ticker ETH --unit m --ped 1
+```
+
+* 거래소: coinone
+* 마켓: KRW(한화)
+* 거래코인: ETH(이더리움)
+* 거래간격: 1분
+
+- sample 2
+
+```
+$ python3 app.py --exchange coinone --market KRW --ticker ETH --unit m --ped 5
+```
+
+* 거래소: coinone
+* 마켓: KRW(한화)
+* 거래코인: ETH(이더리움)
+* 거래간격: 5분
+
+- sample 3
+
+```
+$ python3 app.py --exchange coinone --market KRW --ticker ETH --unit d --ped 1
+```
+
+* 거래소: coinone
+* 마켓: KRW(한화)
+* 거래코인: ETH(이더리움)
+* 거래간격: 1일
