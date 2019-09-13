@@ -49,3 +49,5 @@ $ python3 app.py --exchange upbit --market BTC --ticker ETH --unit days --ped 1
 * 마켓: BTC(비트코인)
 * 거래코인: ETH(이오스)
 * 거래간격: 1일
+
+> 결과 데이터는 **`거래소_마켓_거래코인_거래간격.csv`** 형태로 저장
